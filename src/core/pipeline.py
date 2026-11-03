@@ -22,6 +22,7 @@ from ai.super_resolution import (
     upscale_with_session,
 )
 from color_management.icc import validate_cmyk_profile
+from hardware.detect import recommended_ai_tile_size
 from illustrator.automation import create_illustrator_files
 from image_processing.analysis import SUPPORTED_EXTENSIONS, analyze_image
 from print_preparation.dimensions import A1_LANDSCAPE_MM, A1_MM, target_pixels
@@ -425,6 +426,17 @@ def process_image(
                     str(options.get("ai_backend", "auto")),
                 )
             upscale_scale = ai_runtime.scale
+        tile_size_setting = options.get("ai_tile_size", 256)
+        if tile_size_setting == "auto":
+            available_ram_gb = psutil.virtual_memory().available / (1024**3)
+            ai_tile_size = recommended_ai_tile_size(available_ram_gb)
+            if progress:
+                progress(
+                    f"Automatic AI tile size: {ai_tile_size} pixels "
+                    f"({available_ram_gb:.1f} GB RAM available)."
+                )
+        else:
+            ai_tile_size = int(tile_size_setting)
         if bool(options.get("enable_print_output")):
             ppi = int(options.get("target_ppi", 700))
             bleed_size = (
@@ -439,7 +451,7 @@ def process_image(
             output_root,
             target_size,
             upscale_scale,
-            int(options.get("ai_tile_size", 256)),
+            ai_tile_size,
             int(options.get("ai_tile_overlap", 16)),
         )
         analysis = analyze_image(source_path)
@@ -478,7 +490,7 @@ def process_image(
                 enhanced,
                 ai_runtime.session,
                 upscaled_path,
-                tile_size=int(options.get("ai_tile_size", 256)),
+                tile_size=ai_tile_size,
                 overlap=int(options.get("ai_tile_overlap", 16)),
                 progress=progress,
                 model_info=(
@@ -494,7 +506,7 @@ def process_image(
                 "backend": ai_runtime.backend,
                 "scale": detected_scale,
                 "model_sha256": model_sha256(Path(str(options.get("model_path") or ""))),
-                "tile_size": int(options.get("ai_tile_size", 256)),
+                "tile_size": ai_tile_size,
                 "tile_overlap": int(options.get("ai_tile_overlap", 16)),
                 "dimensions": [width, height],
             }

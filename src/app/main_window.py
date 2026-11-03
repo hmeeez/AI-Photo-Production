@@ -98,7 +98,13 @@ class MainWindow(QMainWindow):
         )
         self.model_edit = QLineEdit()
         self.ai_tile_size = QComboBox()
-        self.ai_tile_size.addItems(["256", "384", "512"])
+        self.ai_tile_size.addItem("Automatic (based on available RAM)", "auto")
+        for tile_size in (128, 256, 384, 512):
+            self.ai_tile_size.addItem(str(tile_size), tile_size)
+        self.ai_tile_size.setToolTip(
+            "Automatic mode selects a conservative tile size using currently available RAM "
+            "for each image. Select a size to override it."
+        )
         self.ai_tile_overlap = QSpinBox()
         self.ai_tile_overlap.setValue(16)
         self.ai_tile_size.currentTextChanged.connect(self._update_ai_overlap_limit)
@@ -251,7 +257,14 @@ class MainWindow(QMainWindow):
         self.model_edit.setText(
             str(model_path if model_path.is_absolute() else self.root / model_path)
         )
-        self.ai_tile_size.setCurrentText(str(self.config.get("ai_tile_size", 256)))
+        saved_tile_size = self.config.get("ai_tile_size", "auto")
+        if saved_tile_size != "auto":
+            try:
+                saved_tile_size = int(saved_tile_size)
+            except (TypeError, ValueError):
+                saved_tile_size = "auto"
+        tile_index = self.ai_tile_size.findData(saved_tile_size)
+        self.ai_tile_size.setCurrentIndex(tile_index if tile_index >= 0 else 0)
         self.ai_tile_overlap.setValue(int(self.config.get("ai_tile_overlap", 16)))
         saved_backend = str(self.config.get("ai_backend", "auto"))
         backend_index = self.ai_backend.findData(saved_backend)
@@ -284,8 +297,10 @@ class MainWindow(QMainWindow):
         )
         self._refresh_resources()
 
-    def _update_ai_overlap_limit(self, tile_size: str) -> None:
-        maximum = min(128, int(tile_size) // 2 - 1)
+    def _update_ai_overlap_limit(self, _tile_size: str) -> None:
+        selected_tile_size = self.ai_tile_size.currentData()
+        tile_size = 128 if selected_tile_size == "auto" else int(selected_tile_size)
+        maximum = min(128, tile_size // 2 - 1)
         self.ai_tile_overlap.setRange(8, maximum)
 
     def _test_model(self) -> None:
@@ -365,7 +380,7 @@ class MainWindow(QMainWindow):
         options: dict[str, object] = {
             "enable_ai_upscale": self.ai_enabled.isChecked(),
             "model_path": self.model_edit.text(),
-            "ai_tile_size": int(self.ai_tile_size.currentText()),
+            "ai_tile_size": self.ai_tile_size.currentData(),
             "ai_tile_overlap": self.ai_tile_overlap.value(),
             "ai_backend": str(self.ai_backend.currentData()),
             "enable_print_output": self.print_enabled.isChecked(),

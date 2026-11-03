@@ -134,14 +134,14 @@ class SuperResolutionTests(unittest.TestCase):
                     "output",
                     2,
                 ),
-            ):
+            ), patch("core.pipeline.recommended_ai_tile_size", return_value=128):
                 report = process_image(
                     source_path,
                     root / "OUTPUT",
                     {
                         "enable_ai_upscale": True,
                         "model_path": str(model_path),
-                        "ai_tile_size": 64,
+                        "ai_tile_size": "auto",
                         "ai_tile_overlap": 8,
                         "enable_print_output": False,
                     },
@@ -149,6 +149,7 @@ class SuperResolutionTests(unittest.TestCase):
             self.assertEqual(report["status"], "completed", report["errors"])
             self.assertEqual(report["stages"]["ai_upscaling"]["backend"], "ONNX Runtime CPU")
             self.assertEqual(report["stages"]["ai_upscaling"]["scale"], 2)
+            self.assertEqual(report["stages"]["ai_upscaling"]["tile_size"], 128)
             self.assertTrue(Path(report["outputs"]["upscaled"]).is_file())
             with Image.open(report["outputs"]["upscaled"]) as output:
                 self.assertEqual(output.size, (190, 146))

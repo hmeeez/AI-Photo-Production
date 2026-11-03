@@ -8,6 +8,16 @@ from pathlib import Path
 import psutil
 
 
+def recommended_ai_tile_size(available_ram_gb: float) -> int:
+    if available_ram_gb < 4:
+        return 128
+    if available_ram_gb < 8:
+        return 256
+    if available_ram_gb < 16:
+        return 384
+    return 512
+
+
 def _powershell_value(expression: str) -> str:
     try:
         result = subprocess.run(

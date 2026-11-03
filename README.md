@@ -11,7 +11,8 @@ print preparation, and optional Adobe Illustrator/PDF export.
   warnings and effective source PPI.
 - Tiled ONNX x2/x4 super-resolution with CPU inference, optional OpenVINO
   Intel GPU acceleration, and optional Vulkan through a custom ONNX Runtime
-  build that exposes its Vulkan execution provider.
+  build that exposes its Vulkan execution provider. Automatic tile sizing
+  adapts to currently available system RAM for each image.
 - A1 and custom-size CMYK TIFF output with margins, bleed, optional crop marks,
   a user-selected printer ICC profile, and tiled disk streaming.
 - Optional Illustrator automation for embedded, proportional placement and

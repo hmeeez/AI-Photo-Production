@@ -17,7 +17,7 @@
   "crop_marks": false,
   "enable_ai_upscale": true,
   "model_path": "MODELS/real_esrgan_x4.onnx",
-  "ai_tile_size": 256,
+  "ai_tile_size": "auto",
   "ai_tile_overlap": 16,
   "ai_backend": "auto"
 }
