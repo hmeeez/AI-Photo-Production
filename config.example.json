@@ -1,0 +1,23 @@
+{
+  "input_dir": "INPUT",
+  "output_dir": "OUTPUT",
+  "profile": "BALANCED",
+  "target_ppi": 700,
+  "paper": "A1 portrait",
+  "paper_width_mm": 594,
+  "paper_height_mm": 841,
+  "fit_mode": "fit",
+  "icc_profile": "",
+  "rendering_intent": "relative_colorimetric",
+  "enable_print_output": false,
+  "enable_illustrator": false,
+  "monitor_input": false,
+  "margin_mm": 0,
+  "bleed_mm": 0,
+  "crop_marks": false,
+  "enable_ai_upscale": true,
+  "model_path": "MODELS/real_esrgan_x4.onnx",
+  "ai_tile_size": 256,
+  "ai_tile_overlap": 16,
+  "ai_backend": "auto"
+}

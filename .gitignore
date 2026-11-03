@@ -1,0 +1,41 @@
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+
+# Local settings and credentials
+/config.json
+.env
+.env.*
+!.env.example
+
+# User photos, generated results, and local profiles
+/INPUT/*
+!/INPUT/README.md
+/OUTPUT/*
+!/OUTPUT/README.md
+/ICC_PROFILES/*
+!/ICC_PROFILES/README.md
+/TEMP/*
+!/TEMP/README.md
+/LOGS/*
+!/LOGS/README.md
+/CONFIG/*
+!/CONFIG/README.md
+/kernel.errors.txt
+
+# Downloaded model weights are distributed separately.
+/MODELS/*
+!/MODELS/README.md
+
+# Build and editor artifacts
+/build/
+/dist/
+.idea/
+.vscode/
+Thumbs.db
+Desktop.ini
